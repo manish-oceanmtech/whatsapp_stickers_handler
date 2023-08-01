@@ -1,10 +1,11 @@
+// ignore_for_file: prefer_collection_literals
+
 class StickerData {
   String? androidPlayStoreLink;
   String? iosAppStoreLink;
   List<StickerPacks>? stickerPacks;
 
-  StickerData(
-      {this.androidPlayStoreLink, this.iosAppStoreLink, this.stickerPacks});
+  StickerData({this.androidPlayStoreLink, this.iosAppStoreLink, this.stickerPacks});
 
   StickerData.fromJson(Map<String, dynamic> json) {
     androidPlayStoreLink = json['android_play_store_link'];
@@ -103,7 +104,6 @@ class StickerPacks {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "identifier: $identifier, name: $name, publisher: $publisher";
   }
 }

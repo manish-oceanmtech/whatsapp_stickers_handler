@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_stickers_handler/exceptions.dart';
 import 'package:whatsapp_stickers_handler/whatsapp_stickers_handler.dart';
@@ -40,8 +41,7 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
         padding: EdgeInsets.symmetric(vertical: 8.0),
         child: Text(
           "Sticker Added",
-          style: TextStyle(
-              color: Colors.green, fontSize: 16.0, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.green, fontSize: 16.0, fontWeight: FontWeight.bold),
         ),
       );
     } else {
@@ -52,22 +52,21 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
           var tryImage = '';
           if (stickerFetchType == 'staticStickers') {
             for (var e in stickerPack.stickers!) {
-              stickers[WhatsappStickerImageHandler.fromAsset(
-                      "assets/${stickerPack.identifier}/${e.imageFile as String}")
-                  .path] = e.emojis as List<String>;
+              stickers[
+                  WhatsappStickerImageHandler.fromAsset("assets/${stickerPack.identifier}/${e.imageFile as String}")
+                      .path] = e.emojis as List<String>;
             }
-            tryImage = WhatsappStickerImageHandler.fromAsset(
-                    "assets/${stickerPack.identifier}/${stickerPack.trayImageFile}")
-                .path;
+            tryImage =
+                WhatsappStickerImageHandler.fromAsset("assets/${stickerPack.identifier}/${stickerPack.trayImageFile}")
+                    .path;
           } else {
             final dio = Dio();
             final downloads = <Future>[];
-            var applicationDocumentsDirectory =
-                await getApplicationDocumentsDirectory();
+            var applicationDocumentsDirectory = await getApplicationDocumentsDirectory();
             var stickersDirectory = Directory(
                 //'${applicationDocumentsDirectory.path}/stickers/${stickerPack.identifier}');
                 '${applicationDocumentsDirectory.path}/${stickerPack.identifier}');
-            await stickersDirectory.create(recursive: true);
+            await stickersDirectory.create(recursive: false);
 
             downloads.add(
               dio.download(
@@ -80,10 +79,8 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
                 .path;
 
             for (var e in stickerPack.stickers!) {
-              var urlPath =
-                  "${constants.baseUrl}${stickerPack.identifier}/${(e.imageFile as String)}";
-              var savePath =
-                  "${stickersDirectory.path}/${(e.imageFile as String).toLowerCase()}";
+              var urlPath = "${constants.baseUrl}${stickerPack.identifier}/${(e.imageFile as String)}";
+              var savePath = "${stickersDirectory.path}/${(e.imageFile as String).toLowerCase()}";
               downloads.add(
                 dio.download(
                   urlPath,
@@ -99,8 +96,7 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
             await Future.wait(downloads);
           }
           try {
-            final WhatsappStickersHandler _whatsappStickersHandler =
-                WhatsappStickersHandler();
+            final WhatsappStickersHandler _whatsappStickersHandler = WhatsappStickersHandler();
             var result = await _whatsappStickersHandler.addStickerPack(
               stickerPack.identifier,
               stickerPack.name as String,
@@ -112,11 +108,17 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
               stickerPack.animatedStickerPack ?? false,
               stickers,
             );
-            print("RESULT $result");
+            if (kDebugMode) {
+              print("RESULT $result");
+            }
           } on WhatsappStickersException catch (e) {
-            print("INSIDE WhatsappStickersException ${e.cause}");
+            if (kDebugMode) {
+              print("INSIDE WhatsappStickersException ${e.cause}");
+            }
           } catch (e) {
-            print("Exception ${e.toString()}");
+            if (kDebugMode) {
+              print("Exception ${e.toString()}");
+            }
           }
         },
       );
@@ -133,10 +135,9 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
                 padding: const EdgeInsets.all(10.0),
                 child: stickerFetchType == "remoteStickers"
                     ? FadeInImage(
-                        placeholder:
-                            const AssetImage("assets/images/loading.gif"),
-                        image: NetworkImage(
-                            "${constants.baseUrl}/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
+                        placeholder: const AssetImage("assets/images/loading.gif"),
+                        image:
+                            NetworkImage("${constants.baseUrl}/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
                         height: 100,
                         width: 100,
                       )
@@ -147,8 +148,7 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
                       ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 20.0, horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -185,8 +185,7 @@ class _StickerPackInfoScreenState extends State<StickerPackInfoScreen> {
                   padding: const EdgeInsets.all(15.0),
                   child: stickerFetchType == "remoteStickers"
                       ? FadeInImage(
-                          placeholder:
-                              const AssetImage("assets/images/loading.gif"),
+                          placeholder: const AssetImage("assets/images/loading.gif"),
                           image: NetworkImage(
                               "${constants.baseUrl}${stickerPack.identifier}/${stickerPack.stickers![index].imageFile as String}"),
                         )

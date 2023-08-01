@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_stickers_handler/exceptions.dart';
 import 'package:whatsapp_stickers_handler/whatsapp_stickers_handler.dart';
@@ -20,8 +21,7 @@ class StickerPackItem extends StatelessWidget {
     required this.stickerFetchType,
   }) : super(key: key);
 
-  Widget addStickerPackButton(
-      bool isInstalled, WhatsappStickersHandler _whatsappStickersHandler) {
+  Widget addStickerPackButton(bool isInstalled, WhatsappStickersHandler _whatsappStickersHandler) {
     stickerPack.isInstalled = isInstalled;
 
     return IconButton(
@@ -29,26 +29,22 @@ class StickerPackItem extends StatelessWidget {
         isInstalled ? Icons.check : Icons.add,
       ),
       color: Colors.teal,
-      tooltip: isInstalled
-          ? 'Add Sticker to WhatsApp'
-          : 'Sticker is added to WhatsApp',
+      tooltip: isInstalled ? 'Add Sticker to WhatsApp' : 'Sticker is added to WhatsApp',
       onPressed: () async {
         Map<String, List<String>> stickers = <String, List<String>>{};
         var tryImage = '';
         if (stickerFetchType == 'staticStickers') {
           for (var e in stickerPack.stickers!) {
-            stickers[WhatsappStickerImageHandler.fromAsset(
-                    "assets/${stickerPack.identifier}/${e.imageFile as String}")
+            stickers[WhatsappStickerImageHandler.fromAsset("assets/${stickerPack.identifier}/${e.imageFile as String}")
                 .path] = e.emojis as List<String>;
           }
-          tryImage = WhatsappStickerImageHandler.fromAsset(
-                  "assets/${stickerPack.identifier}/${stickerPack.trayImageFile}")
-              .path;
+          tryImage =
+              WhatsappStickerImageHandler.fromAsset("assets/${stickerPack.identifier}/${stickerPack.trayImageFile}")
+                  .path;
         } else {
           final dio = Dio();
           final downloads = <Future>[];
-          var applicationDocumentsDirectory =
-              await getApplicationDocumentsDirectory();
+          var applicationDocumentsDirectory = await getApplicationDocumentsDirectory();
           var stickersDirectory = Directory(
               //'${applicationDocumentsDirectory.path}/stickers/${stickerPack.identifier}');
               '${applicationDocumentsDirectory.path}/${stickerPack.identifier}');
@@ -65,10 +61,8 @@ class StickerPackItem extends StatelessWidget {
               .path;
 
           for (var e in stickerPack.stickers!) {
-            var urlPath =
-                "${constants.baseUrl}${stickerPack.identifier}/${(e.imageFile as String)}";
-            var savePath =
-                "${stickersDirectory.path}/${(e.imageFile as String).toLowerCase()}";
+            var urlPath = "${constants.baseUrl}${stickerPack.identifier}/${(e.imageFile as String)}";
+            var savePath = "${stickersDirectory.path}/${(e.imageFile as String).toLowerCase()}";
             downloads.add(
               dio.download(
                 urlPath,
@@ -96,7 +90,9 @@ class StickerPackItem extends StatelessWidget {
             stickers,
           );
         } on WhatsappStickersException catch (e) {
-          print(e.cause);
+          if (kDebugMode) {
+            print(e.cause);
+          }
         }
       },
     );
@@ -104,14 +100,12 @@ class StickerPackItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WhatsappStickersHandler _whatsappStickersHandler =
-        WhatsappStickersHandler();
+    final WhatsappStickersHandler _whatsappStickersHandler = WhatsappStickersHandler();
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         onTap: () {
-          Navigator.of(context)
-              .pushNamed(StickerPackInfoScreen.routeName, arguments: {
+          Navigator.of(context).pushNamed(StickerPackInfoScreen.routeName, arguments: {
             'stickerPack': stickerPack,
             'stickerFetchType': stickerFetchType,
           });
@@ -121,14 +115,11 @@ class StickerPackItem extends StatelessWidget {
         leading: stickerFetchType == "remoteStickers"
             ? FadeInImage(
                 placeholder: const AssetImage("assets/images/loading.gif"),
-                image: NetworkImage(
-                    "${constants.baseUrl}/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
+                image: NetworkImage("${constants.baseUrl}/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
               )
-            : Image.asset(
-                "assets/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
+            : Image.asset("assets/${stickerPack.identifier}/${stickerPack.trayImageFile}"),
         trailing: FutureBuilder(
-            future: _whatsappStickersHandler
-                .isStickerPackInstalled(stickerPack.identifier as String),
+            future: _whatsappStickersHandler.isStickerPackInstalled(stickerPack.identifier as String),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               return snapshot.connectionState == ConnectionState.waiting
                   ? const Text("+")

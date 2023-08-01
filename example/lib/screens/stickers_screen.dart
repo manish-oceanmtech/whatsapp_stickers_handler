@@ -1,17 +1,16 @@
+// ignore_for_file: annotate_overrides
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:whatsapp_stickers_handler/whatsapp_stickers_handler.dart';
 import 'package:whatsapp_stickers_handler_example/models/sticker_data.dart';
-import 'package:whatsapp_stickers_handler_example/screens/sticker_pack_info_screen.dart';
 import '../widgets/app_bar.dart' as app_bar;
 import 'package:dio/dio.dart';
 
 import '../widgets/sticker_pack_item.dart';
 
 mixin constants {
-  static String baseUrl =
-      'https://mandj.sfo2.cdn.digitaloceanspaces.com/stickers_test/';
+  static String baseUrl = 'https://mandj.sfo2.cdn.digitaloceanspaces.com/stickers_test/';
 }
 
 class StickersScreen extends StatefulWidget {
@@ -33,10 +32,10 @@ class _StickersScreenState extends State<StickersScreen> {
   late String stickerFetchType;
   late Dio dio;
   var downloads = <Future>[];
-  var data;
 
   void _loadStickers() async {
-    if (stickerFetchType == null || stickerFetchType == 'staticStickers') {
+    var data;
+    if (stickerFetchType == 'staticStickers') {
       data = await rootBundle.loadString("assets/contents.json");
     } else {
       dio = Dio();
@@ -62,9 +61,7 @@ class _StickersScreenState extends State<StickersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: app_bar.AppBar(
-        title: stickerFetchType == "staticStickers"
-            ? "Static Stickers"
-            : "Remote Stickers",
+        title: stickerFetchType == "staticStickers" ? "Static Stickers" : "Remote Stickers",
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
